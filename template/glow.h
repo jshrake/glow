@@ -192,7 +192,7 @@ void *glow_get_proc(char const *name) {
 
 {{range .Commands}}
 static {{.ReturnType}} glow_lazy_{{.Name}}({{.Params}}) {
-  glow_{{.Name}} = ({{.PfnName}})((ptrdiff_t)(glow_get_proc("{{.Name}}")));
+  glow_{{.Name}} = ({{.PfnName}})((glow_get_proc("{{.Name}}")));
   if (glow_{{.Name}} == NULL) {
     GLOW_ASSERT(!0 && "glow error: failed to load {{.Name}}\n");
 #ifndef GLOW_NO_STDIO
@@ -219,14 +219,14 @@ static glow_debug_proc_t glow_post_callback_ = glow_post_callback_default_;
 {{range .Commands}}
 static {{.ReturnType}} glow_debug_impl_{{.Name}}({{.Params}}) {
 {{if eq .ReturnType "void"}}
-  glow_pre_callback_("{{.Name}}", (void*)(ptrdiff_t)glow_{{.Name}}{{.ArgsWithLeadingComma}});
+  glow_pre_callback_("{{.Name}}", (void*)glow_{{.Name}}{{.ArgsWithLeadingComma}});
   glow_{{.Name}}({{.Args}});
-  glow_post_callback_("{{.Name}}", (void*)(ptrdiff_t)glow_{{.Name}}{{.ArgsWithLeadingComma}});
+  glow_post_callback_("{{.Name}}", (void*)glow_{{.Name}}{{.ArgsWithLeadingComma}});
 {{else}}
   {{.ReturnType}} ret;
-  glow_pre_callback_("{{.Name}}", (void*)(ptrdiff_t)glow_{{.Name}}{{.ArgsWithLeadingComma}});
+  glow_pre_callback_("{{.Name}}", (void*)glow_{{.Name}}{{.ArgsWithLeadingComma}});
   ret = glow_{{.Name}}({{.Args}});
-  glow_post_callback_("{{.Name}}", (void*)(ptrdiff_t)glow_{{.Name}}{{.ArgsWithLeadingComma}});
+  glow_post_callback_("{{.Name}}", (void*)glow_{{.Name}}{{.ArgsWithLeadingComma}});
   return ret;
 {{end}}}
 {{.PfnName}} glow_debug_{{.Name}} = glow_debug_impl_{{.Name}};
@@ -242,7 +242,7 @@ int glow_init(void) {
 int glow_init_with(glow_load_proc_t get_proc) {
   int unresolved_count = 0;
 {{range .Commands}}
-  glow_{{.Name}} = ({{.PfnName}})(ptrdiff_t)get_proc("{{.Name}}");
+  glow_{{.Name}} = ({{.PfnName}})get_proc("{{.Name}}");
   if (glow_{{.Name}} == NULL) {
     GLOW_ASSERT(!0 && "glow error: failed to load {{.Name}}\n");
 #ifndef GLOW_NO_STDIO
