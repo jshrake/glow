@@ -185,16 +185,16 @@ void *glow_get_proc(char const *name) {
 }
 #else
 void *glow_get_proc(char const *name) {
-  GLOW_ASSERT(0! && "Platform not supported. You must call glow_init_with.");
+  GLOW_ASSERT(0 && "Platform not supported. You must call glow_init_with.");
   return NULL;
 }
 #endif
 
 {{range .Commands}}
-static {{.ReturnType}} glow_lazy_{{.Name}}({{.Params}}) {
+static {{.ReturnType}} APIENTRY glow_lazy_{{.Name}}({{.Params}}) {
   glow_{{.Name}} = ({{.PfnName}})((glow_get_proc("{{.Name}}")));
   if (glow_{{.Name}} == NULL) {
-    GLOW_ASSERT(!0 && "glow error: failed to load {{.Name}}\n");
+    GLOW_ASSERT(0 && "glow error: failed to load {{.Name}}\n");
 #ifndef GLOW_NO_STDIO
     printf("glow error: failed to load {{.Name}}\n");
 #endif
@@ -244,7 +244,7 @@ int glow_init_with(glow_load_proc_t get_proc) {
 {{range .Commands}}
   glow_{{.Name}} = ({{.PfnName}})get_proc("{{.Name}}");
   if (glow_{{.Name}} == NULL) {
-    GLOW_ASSERT(!0 && "glow error: failed to load {{.Name}}\n");
+    GLOW_ASSERT(0 && "glow error: failed to load {{.Name}}\n");
 #ifndef GLOW_NO_STDIO
     printf("glow error: failed to load {{.Name}}\n");
 #endif
